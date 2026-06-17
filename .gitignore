@@ -1,0 +1,6 @@
+__pycache__/
+.streamlit/
+.venv/
+venv/
+data/Skin_NonSkin.txt
+.streamlit-*.log
