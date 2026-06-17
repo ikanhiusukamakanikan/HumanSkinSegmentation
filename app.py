@@ -21,6 +21,7 @@ DATASET_URL = (
     "Skin_NonSkin.txt"
 )
 LOCAL_DATASET_PATH = Path("data") / "Skin_NonSkin.txt"
+EXAMPLE_IMAGE_PATH = Path("data") / "ExampleImage.png"
 APP_TITLE = "Human skin segmentation with the GMM-EM algorithm"
 
 
@@ -376,10 +377,19 @@ with segment_tab:
         type=["jpg", "jpeg", "png", "webp", "bmp"],
     )
 
+    image = None
+    image_source = None
     if image_file is None:
-        st.info("Upload gambar untuk menjalankan segmentasi.")
+        if EXAMPLE_IMAGE_PATH.exists():
+            image = Image.open(EXAMPLE_IMAGE_PATH)
+            image_source = "Placeholder: data/ExampleImage.png"
+        else:
+            st.info("Upload gambar untuk menjalankan segmentasi.")
     else:
         image = Image.open(image_file)
+        image_source = image_file.name
+
+    if image is not None:
         rgb = pil_to_rgb_array(image, int(max_side))
         mask, mask_image, segmented, overlay = segment_skin(
             rgb,
@@ -388,6 +398,9 @@ with segment_tab:
             float(threshold),
             int(kernel_size),
         )
+
+        if image_source:
+            st.caption(image_source)
 
         coverage = float(mask.mean() * 100)
         st.metric("Area terdeteksi kulit", f"{coverage:.2f}%")
